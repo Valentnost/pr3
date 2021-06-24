@@ -18,3 +18,21 @@
 	<iostream>
 	<fstream>
 
+1624538529 source:c:\users\spill\desktop\pr3\class_sorting.cpp
+	<iostream>
+	<fstream>
+	<ctime>
+	<math.h>
+	<string.h>
+	<stdlib.h>
+	"main.h"
+
+1624538541 c:\users\spill\desktop\pr3\main.h
+	<iostream>
+	<fstream>
+
+1624537061 source:c:\users\spill\desktop\pr3\main.cpp
+	<iostream>
+	<windows.h>
+	"main.h"
+

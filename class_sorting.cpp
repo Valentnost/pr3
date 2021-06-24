@@ -2,6 +2,8 @@
 #include <fstream>
 #include <ctime>
 #include <math.h>
+#include <string.h>
+#include <stdlib.h>
 #include "main.h"
 using namespace std;
 
@@ -101,13 +103,13 @@ void sorting:: bubble(int *a)      //сортировка пузырьком
 	cout << "\tКоличество вспомогательных присваиваний: " << extra_count << endl;
 	cout << "\tВремя работы алгоритма: " << double(t-t0)/CLOCKS_PER_SEC << endl;
 }
-void sorting:: ShellSort (int *a)     //сортировка Шелла
+void sorting::ShellSort (int *a)     //сортировка Шелла
 {
     long long main_count =0, extra_count = 0;
     clock_t t0, t1;
     t0 = clock();
-
-    const int t=(int)(log(N)/log(2)-1);extra_count++;
+    const int t=(int)(log(N)/log(2)-1);
+    extra_count++;
     int i, j, k, m, x;
     int *h = (int *) malloc (t*sizeof(int));
 
@@ -137,7 +139,8 @@ void sorting:: ShellSort (int *a)     //сортировка Шелла
 	cout << "Количество вспомогательных присваиваний: " << extra_count << endl;
 	cout << "Время работы алгоритма: " << double(t1-t0)/CLOCKS_PER_SEC << endl;
 }
-void sorting:: ShellSortFibonachi (int *a)     //сортировка Шелла (шаг задается числами фибоначчи)
+
+void sorting::ShellSortFibonachi (int *a)     //сортировка Шелла (шаг задается числами фибоначчи)
 {
     long long main_count =0, extra_count = 0;
     clock_t t0, t1;
@@ -179,31 +182,30 @@ void sorting:: ShellSortFibonachi (int *a)     //сортировка Шелла (шаг задается 
 	cout << "Количество вспомогательных присваиваний: "<< extra_count << endl;
     cout << "Время работы алгоритма: " << double (t1-t0)/CLOCKS_PER_SEC << endl;
 }
-/* поразрядная сортировка
-
-typedef unsigned char uchar;
-typedef unsigned short int ushort;
-
+// поразрядная сортировка
+// Количество присваиваний
+// Количество вспомогательных присваиваний
+// Время работы алгоритма
 long long main_count =0, extra_count = 0;
 
-void swap(int& a, int& b)
+void sorting::swap(int* a, int* b)
 {
-    int tmp = a;
-    a = b;
-    b = tmp;
+    int tmp = *a;
+    *a = *b;
+    *b = tmp;
     extra_count += 3;
 }
 
 // Создать счетчики.
 // data-сортируемый массив, counters-массив для счетчиков, N-число элементов в data
 
-void createCounters(int* data, long* counters, long N) {
+void sorting::createCounters(int* data, long* counters, long N) {
     // i-й массив count расположен, начиная с адреса counters+256*i
     memset(counters, 0, 256 * sizeof(int) * sizeof(long));
 
-    uchar* bp = (uchar*)data;
-    uchar* dataEnd = (uchar*)(data + N);
-    ushort i;
+    unsigned char* bp = (unsigned char*)data;
+    unsigned char* dataEnd = (unsigned char*)(data + N);
+    unsigned int short i;
 
     while (bp != dataEnd) {
         // увеличиваем количество байт со значением *bp
@@ -221,16 +223,18 @@ void createCounters(int* data, long* counters, long N) {
 // массив dest, куда будут записываться числа, отсортированные по байту Offset
 // массив счетчиков count, соответствующий текущему проходу.
 
-void radixPass(short Offset, long N, int* source, int* dest, long* count) {
+void sorting::radixPass(short Offset, long N, int* source, int* dest, long* count) {
     // временные переменные
     int* sp;
     long s, c, i, * cp;
-    uchar* bp;
+    unsigned char* bp;
 
 
     // шаг 3
-    s = 0, extra_count++; 	// временная переменная, хранящая сумму на данный момент
-    cp = count, extra_count++;
+
+    s = 0; // временная переменная, хранящая сумму на данный момент
+    cp = count;
+    /*+*/extra_count += 2;
     int cou = 0;
     for (++extra_count, i = 256; i > 0; extra_count += 2, --i, ++cp) {
         c = *cp;
@@ -243,8 +247,8 @@ void radixPass(short Offset, long N, int* source, int* dest, long* count) {
 
     cou = 0;
     // шаг 4
-    bp = (uchar*)source + Offset;
-    extra_count += 1;
+    bp = (unsigned char*)source + Offset;
+    /*+*/extra_count += 1;
     sp = source;
     extra_count += 1;
     for (extra_count++, i = N; i > 0; --i, bp += sizeof(int), ++sp, extra_count += 3) {
@@ -259,89 +263,18 @@ void radixPass(short Offset, long N, int* source, int* dest, long* count) {
 }
 
 // сортируется массив in из N элементов
-// T - любой беззнаковый целый тип
-
-// проход поразрядной сортировки по старшим байтам,
-// для целых чисел со знаком Offset = sizeof(T)-1.
-
-void signedRadixLastPass(short Offset, long N, int* source, int* dest, long* count) {
-    int* sp;
-    long s, c, i, * cp;
-    uchar* bp;
-
-    // подсчет количества отрицательных чисел
-    long numNeg = 0;
-    for (i = 128, extra_count += 1; i < 256; i++, extra_count+= 1) {
-        extra_count += 1;
-        numNeg += count[i];
+void sorting::radixSort (int* &in, long N) {
+    int *out = new int[N];
+    long *counters = new long[sizeof(int)*256], *count;
+    createCounters(in, counters, N);
+    for (unsigned int short i=0; i<sizeof(int); i++) {
+        count = counters + 256*i; // count - массив счетчиков для i-го разряда
+        if ( count[0] == N ) continue; // (*** см ниже)
+        radixPass (i, N, in, out, count); // после каждого шага входной и
+        swap(in, out); // выходной массивы меняются местами
     }
-
-    // первые 128 элементов count относятся к положительным числам.
-    // отсчитываем номер первого числа, начиная от numNeg
-    s = numNeg;
-    cp = count;
-    extra_count += 2;
-    for (extra_count+= 1,i = 0; i < 128; extra_count += 1, ++i, extra_count += 1, ++cp) {
-        c = *cp;
-        *cp = s;
-        s += c;
-       main_count += 1;
-        extra_count += 2;
-    }
-
-    // номера для отрицательных чисел отсчитываем от начала массива
-    s = 0;
-    cp = count + 128;
-    extra_count += 2;
-    for (extra_count += 1, i = 0; i < 128; extra_count += 1, ++i, extra_count += 1, ++cp) {
-        c = *cp;
-        *cp = s;
-        s += c;
-        main_count += 1;
-        extra_count += 2;
-    }
-
-
-    bp = (uchar*)source + Offset;
-    sp = source;
-    extra_count += 2;
-    for (extra_count += 1, i = N; i > 0; --i, extra_count += 1, bp += sizeof(int), extra_count += 1, ++sp) {
-        cp = count + *bp;
-        dest[*cp] = *sp;
-        ++(*cp);
-        main_count += 1;
-        extra_count += 2;
-    }
+     // по окончании проходов
+    delete out; // вся информация остается во входном массиве.
+    delete counters;
 }
-
-void signedRadixSort(int* a) {
-    clock_t t0, t;
-    t0 = clock();
-    int* out = new int[N];
-    ushort i;
-
-    long* counters = new long[sizeof(int) * 256], * count;
-
-    createCounters(a, counters, N);
-
-    for (++extra_count, i = 0; i < sizeof(int) - 1; ++extra_count, i++) {
-        count = counters + 256 * i, ++extra_count;
-        if (count[0] == N) continue;
-        radixPass(i, N, a, out, count);
-        swap(a, out);
-    }
-    count = counters + 256 * i;
-    extra_count += 1;
-    signedRadixLastPass(i, N, a, out, count);
-    swap(a, out);
-
-    a = out;
-    delete[] counters;
-
-    t = clock();
-	cout << "Количество основных присваиваний: " << main_count << endl;
-	cout << "Количество вспомогательных присваиваний: "<< extra_count << endl;
-    cout << "Время работы алгоритма: " << double (t-t0)/CLOCKS_PER_SEC << endl;
-}*/
-
 
