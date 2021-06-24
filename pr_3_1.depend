@@ -1,0 +1,20 @@
+# depslib dependency file v1.0
+1624469461 source:d:\讶文\pr_3\pr_3_1\class_sorting.cpp
+	<iostream>
+	<fstream>
+	<ctime>
+	"main.h"
+
+1624469401 source:d:\讶文\pr_3\pr_3_1\main.cpp
+	<iostream>
+	<windows.h>
+	"main.h"
+
+1624455142 d:\讶文\pr_3\pr_3_1\class_sorting.cpp
+	<iostream>
+	<fstream>
+
+1624469291 d:\讶文\pr_3\pr_3_1\main.h
+	<iostream>
+	<fstream>
+
