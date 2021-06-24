@@ -10,13 +10,15 @@ class sorting {
     int N = 0;
     int *arr = nullptr;
     void bubble(int *arr);
+    void ShellSort(int *a);
+    void ShellSortFibonachi (int *a);
+    void reverse_array ();
 public:
     sorting (int n);
     ~sorting ();
     void create_array ();
     void create_array_repit_key();
     void print_array ();
-    int* copy_array ();
     void sort_on ();
 };
 

@@ -2,7 +2,7 @@
 #include <windows.h>
 #include "main.h"
 
-#define N1 10000
+#define N1 10
 #define N2 30000
 #define N3 70000
 #define N4 100000

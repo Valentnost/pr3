@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
+#include <math.h>
 #include "main.h"
 using namespace std;
 
@@ -19,30 +20,66 @@ void sorting:: create_array(){
     }
     cout << "Создание массива без повторяющихся ключей на "<< N <<" элементов" << endl << endl;
 }
-
+void sorting:: reverse_array (){
+    int temp;
+    for (int i=0; i < N/2; i++){
+        temp = arr[i];
+        arr[i] = arr[N-1-i];
+        arr[N-1-i] = temp;
+    }
+}
 void sorting:: print_array (){
     for (int i=0; i<N; i++)
         cout << arr[i] << " ";
     cout << endl;
 }
-int* sorting:: copy_array (){
-    int* new_arr;
-    new_arr = new int [N];
-    for (int i=0; i<N; i++)
-        new_arr[i] = arr[i];
-    return new_arr;
-}
+
 void sorting:: sort_on (){
 
-    cout << "Неупорядоченный массив" << endl;
+    cout << "\tНеупорядоченный массив" << endl;
     cout << "Сортировка пузырьком" << endl;
-    bubble(copy_array());
+    bubble(arr);
+    create_array();
+
     cout << "Сортировка методом Шелла" << endl;
+    ShellSort (arr);
+    create_array();
 
-    cout << "Упорядоченный массив" << endl;
+    cout << "Сортировка методом Шелла (шаг задан числами Фибоначчи)" << endl;
+    ShellSortFibonachi (arr);
+    //create_array();
 
+    //cout << "Поразрядная сортировка" << endl;
+
+    cout << "\tУпорядоченный массив" << endl;
+    cout << "Сортировка пузырьком" << endl;
+    bubble(arr);
+
+    cout << "Сортировка методом Шелла" << endl;
+    ShellSort (arr);
+
+    cout << "Сортировка методом Шелла (шаг задан числами Фибоначчи)" << endl;
+    ShellSortFibonachi (arr);
+
+    //cout << "Поразрядная сортировка" << endl;
+
+    cout << "\tОбратно упорядоченный массив" << endl;
+    cout << "Сортировка пузырьком" << endl;
+    reverse_array();
+    print_array();
+    bubble(arr);
+
+    cout << "Сортировка методом Шелла" << endl;
+    reverse_array();
+    ShellSort (arr);
+
+    cout << "Сортировка методом Шелла (шаг задан числами Фибоначчи)" << endl;
+    reverse_array();
+    ShellSortFibonachi (arr);
+
+    //cout << "Поразрядная сортировка" << endl;
 }
-void sorting:: bubble(int * a)      //сортировка пузырьком
+void sorting:: bubble(int *a)      //сортировка пузырьком
 {
 	long long int main_count =0, extra_count = 0;
     clock_t  t0, t;
@@ -67,9 +104,10 @@ void sorting:: bubble(int * a)      //сортировка пузырьком
 void sorting:: ShellSort (int *a)     //сортировка Шелла
 {
     long long main_count =0, extra_count = 0;
-    clock_t t0, t;
+    clock_t t0, t1;
     t0 = clock();
-    const int t=(int)(log(n)/log(2)-1);extra_count++;
+
+    const int t=(int)(log(N)/log(2)-1);extra_count++;
     int i, j, k, m, x;
     int *h = (int *) malloc (t*sizeof(int));
 
@@ -81,7 +119,7 @@ void sorting:: ShellSort (int *a)     //сортировка Шелла
     for (m=0, extra_count++; m<t; m++,     extra_count++)                                 //последовательно перебираем все расстояния
     {
         k = h[m];   extra_count++;
-        for (i=k, extra_count++; i<n; i++, extra_count++)                             //до конца цикла метод вставки с учетом шага h[m]
+        for (i=k, extra_count++; i<N; i++, extra_count++)                             //до конца цикла метод вставки с учетом шага h[m]
         {
             x = a[i];   main_count++;
             j = i-k;    extra_count++;
@@ -94,19 +132,19 @@ void sorting:: ShellSort (int *a)     //сортировка Шелла
         }
     }
     free (h);
-    t = clock();
+    t1 = clock();
 	cout << "Количество основных присваиваний: " << main_count << endl;
 	cout << "Количество вспомогательных присваиваний: " << extra_count << endl;
-	cout << "Время работы алгоритма: " << double(t-t0)/CLOCKS_PER_SEC << endl;
+	cout << "Время работы алгоритма: " << double(t1-t0)/CLOCKS_PER_SEC << endl;
 }
-void ShellSortFibonachi (int *a)     //сортировка Шелла (шаг задается числами фибоначчи)
+void sorting:: ShellSortFibonachi (int *a)     //сортировка Шелла (шаг задается числами фибоначчи)
 {
     long long main_count =0, extra_count = 0;
-    clock_t t0, t;
+    clock_t t0, t1;
     t0 = clock();
 
     int t = 0;
-    for (int i = 1, j = 1; i < n / 2; t++){
+    for (int i = 1, j = 1; i < N / 2; t++){
         i = i + j;
         j = i - j;
     }
@@ -122,7 +160,7 @@ void ShellSortFibonachi (int *a)     //сортировка Шелла (шаг задается числами фи
     for (m=0, extra_count++; m<t; m++,extra_count++)                                 //последовательно перебираем все расстояния
     {
         k = h[m];   extra_count++;
-        for (i=k, extra_count++; i<n; i++, extra_count++)                             //до конца цикла метод вставки с учетом шага h[m]
+        for (i=k, extra_count++; i<N; i++, extra_count++)                             //до конца цикла метод вставки с учетом шага h[m]
         {
             x = a[i];   main_count++;
             j = i-k;    extra_count++;
@@ -136,15 +174,16 @@ void ShellSortFibonachi (int *a)     //сортировка Шелла (шаг задается числами фи
     }
     free (h);
 
-    t = clock();
+    t1 = clock();
 	cout << "Количество основных присваиваний: " << main_count << endl;
 	cout << "Количество вспомогательных присваиваний: "<< extra_count << endl;
-    cout << "Время работы алгоритма: " << double (t-t0)/CLOCKS_PER_SEC << endl;
+    cout << "Время работы алгоритма: " << double (t1-t0)/CLOCKS_PER_SEC << endl;
 }
-// поразрядная сортировка
+/* поразрядная сортировка
 
 typedef unsigned char uchar;
 typedef unsigned short int ushort;
+
 long long main_count =0, extra_count = 0;
 
 void swap(int& a, int& b)
@@ -190,30 +229,30 @@ void radixPass(short Offset, long N, int* source, int* dest, long* count) {
 
 
     // шаг 3
-    /*+*/   s = 0, extra_count++; 	// временная переменная, хранящая сумму на данный момент
-    /*+*/    cp = count, extra_count++;
+    s = 0, extra_count++; 	// временная переменная, хранящая сумму на данный момент
+    cp = count, extra_count++;
     int cou = 0;
-    for (/*+*/extra_count += 1, i = 256; i > 0; /*+*/extra_count += 2, --i, ++cp) {
+    for (++extra_count, i = 256; i > 0; extra_count += 2, --i, ++cp) {
         c = *cp;
         *cp = s;
         s += c;
-        main_count ++;
-        /*+*/extra_count += 2;
+        ++main_count;
+        extra_count += 2;
         cou++;
     }
 
     cou = 0;
     // шаг 4
     bp = (uchar*)source + Offset;
-    /*+*/extra_count += 1;
+    extra_count += 1;
     sp = source;
-    /*+*/extra_count += 1;
-    for (/*+*/extra_count++, i = N; i > 0; --i, bp += sizeof(int), ++sp, extra_count += 3) {
+    extra_count += 1;
+    for (extra_count++, i = N; i > 0; --i, bp += sizeof(int), ++sp, extra_count += 3) {
         cp = count + *bp;
         dest[*cp] = *sp;
         ++(*cp);
         main_count++;
-        /*+*/extra_count += 2;
+        extra_count += 2;
 
         cou++;
     }
@@ -275,7 +314,9 @@ void signedRadixLastPass(short Offset, long N, int* source, int* dest, long* cou
     }
 }
 
-void signedRadixSort(int* a, int N) {
+void signedRadixSort(int* a) {
+    clock_t t0, t;
+    t0 = clock();
     int* out = new int[N];
     ushort i;
 
@@ -283,8 +324,8 @@ void signedRadixSort(int* a, int N) {
 
     createCounters(a, counters, N);
 
-    for (extra_count += 1, i = 0; i < sizeof(int) - 1; extra_count += 1, i++) {
-        count = counters + 256 * i, extra_count += 1;
+    for (++extra_count, i = 0; i < sizeof(int) - 1; ++extra_count, i++) {
+        count = counters + 256 * i, ++extra_count;
         if (count[0] == N) continue;
         radixPass(i, N, a, out, count);
         swap(a, out);
@@ -296,6 +337,11 @@ void signedRadixSort(int* a, int N) {
 
     a = out;
     delete[] counters;
-}
+
+    t = clock();
+	cout << "Количество основных присваиваний: " << main_count << endl;
+	cout << "Количество вспомогательных присваиваний: "<< extra_count << endl;
+    cout << "Время работы алгоритма: " << double (t-t0)/CLOCKS_PER_SEC << endl;
+}*/
 
 
